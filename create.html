@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <style>
+    input, select, textarea { width: 100%; }
+    ul { list-style-type: none; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+    <script>
+      (function() {
+        angular.module('app', [])
+        .factory('Assn', function($http){
+          let factory = {};
+
+          factory.create = (assn, cb) => {
+            $http.post('/assn', assn).then(res => {
+              cb(res.data);
+            })
+          }
+          factory.get = cb => {
+            $http.get('/assn').then(res => {
+              cb(res.data);
+            })
+          }
+
+          return factory;
+        })
+        .factory('Video', function($http){
+          let factory = {};
+
+          factory.get = cb => {
+            $http.get('/videos').then(res => {
+              cb(res.data);   
+            })
+          }
+          factory.create = (video, cb) => {
+            $http.post('/videos', video).then(res => {
+              cb(res.data);
+            })
+          }
+          factory.update = (id, edit, cb) => {
+            console.log(id, edit);
+            $http.put(`/videos/${id}`, edit).then(res => {
+              cb(res.data);
+            }) 
+          }
+
+          return factory;
+        })
+        .controller('mainCtrl', function($scope, Assn, Video) {
+          Assn.get(data => {
+            $scope.assns = data;
+            $scope.video.tag = $scope.assns[0].name;
+          })
+          Video.get(data => {
+            $scope.videos = data;
+          })
+
+          $scope.edit = null;
+          $scope.months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+          ];
+          $scope.years = ['2016', '2017'];
+
+          $scope.video = {
+            month: $scope.months[new Date().getMonth()],
+            year: $scope.years[$scope.years.indexOf(`${new Date().getFullYear()}`)],
+            github: ''
+          }
+
+          $scope.addVideo = () => {
+            Video.create($scope.video, data => {
+              $scope.videos = data;
+              $scope.video = {
+                month: $scope.months[new Date().getMonth()],
+                year: $scope.years[$scope.years.indexOf(`${new Date().getFullYear()}`)],
+                github: ''
+              }
+            })
+          }
+          $scope.addAssn = () => {
+            Assn.create($scope.assn, data => {
+              $scope.assns = data;
+              $scope.video.tag = $scope.assns[0].name;
+            })
+          }
+
+          $scope.editSelect = video => {
+            $scope.currEdit = video;
+            $scope.edit = {};
+            for (let i in video) {
+              $scope.edit[i] = video[i];
+            }
+          }
+          $scope.cancelEdit = () => {
+            $scope.currEdit = null; 
+            $scope.edit = {};
+          }
+          $scope.update = id => {
+            let edit = {};
+            for (let i in $scope.edit) {
+              if ($scope.currEdit[i] != $scope.edit[i]) {
+                edit[i] = $scope.edit[i];
+              }
+            }
+            Video.update(id, edit, data => {
+              if (!data.errors) {
+                $scope.videos = data;
+                $scope.currEdit = null; 
+                $scope.edit = {};
+              }
+            })
+
+
+          }
+        })
+      })()
+    </script>
+  </head>
+  <body ng-app="app">
+    <div ng-controller="mainCtrl">
+
+    <div class="container">
+      <div class="row">
+        <div class="columns twelve"><a href="/">Home</a></div>
+      </div>
+    </div>
+      <div class="container">
+        <div class="row">
+          <div class="columns six">
+            <h1>Video</h1>
+            <form ng-submit="addVideo()">
+
+              <div class="row"> 
+                <div class="columns twelve"> 
+                  <input type="text" placeholder="title" ng-model="video.title">
+                </div>
+              </div>
+              <div class="row"> 
+                <div class="columns six"> 
+                  <select ng-model="video.month" required>
+                    <option ng-repeat="month in months">{{month}}</option>
+                  </select>
+                </div>
+
+                <div class="columns six"> 
+                  <select ng-model="video.year" required>
+                    <option ng-repeat="year in years">{{year}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="columns twelve"> 
+                  <input type="text" placeholder="Github URL" ng-model="video.github" required>
+                </div> 
+              </div>
+              <div class="row">
+                <div class="columns twelve"> 
+                  <input type="text" placeholder="Youtube URL" ng-model="video.url" required>
+                </div> 
+              </div>
+              <div class="row">
+                <div class="columns twelve"> 
+                  <select ng-model="video.tag">
+                    <option ng-repeat="assn in assns">{{assn.name}}</option>
+                  </select>
+                </div> 
+              </div>
+              <div class="row">
+                <div class="columns twelve"> 
+                  <textarea type="text" placeholder="Description" ng-model="video.description"></textarea>
+                </div> 
+              </div>
+              <div class="row">
+                <div class="columns twelve"> 
+                  <input type="submit" value="Create Video">
+                </div> 
+              </div>
+            </form>
+          </div>
+          <div class="columns six">
+            <div class="row">
+              <div class="columns twelve"> 
+                <h1>Assignment</h1>
+                <form ng-submit="addAssn()">
+                  <input type="text" ng-model="assn.name">
+                  <input type="submit" value="Create Assn">
+                </form>
+              </div>
+            </div>
+            <div class="row">
+              <ul>
+                <li class="columns twelve" ng-repeat="assn in assns" ng-bind="assn.name"></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="container">
+        <div class="row">
+          <div class="columns twelve">
+            <table>
+              <thead>
+                <tr class="row">
+                  <th>Title</th>
+                  <th>Month</th>
+                  <th>Year</th>
+                  <th>Github</th>
+                  <th>Youtube</th>
+                  <th>Tag</th>
+                  <th>Description</th>
+                  <th ng-if="!currEdit">Edit</th>
+                  <th ng-if="!currEdit">Del.</th>
+                  <th ng-if="currEdit">Confirm</th>
+                  <th ng-if="currEdit">Cancel</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="video in videos" class="row">
+                  <td ng-bind="video.title" ng-if="currEdit!=video"></td>
+                  <td ng-bind="video.month" ng-if="currEdit!=video"></td>
+                  <td ng-bind="video.year" ng-if="currEdit!=video"></td>
+                  <td ng-bind="video.github" ng-if="currEdit!=video"></td>
+                  <td ng-bind="video.url" ng-if="currEdit!=video"></td>
+                  <td ng-bind="video.tag" ng-if="currEdit!=video"></td>
+                  <td ng-bind="video.description" ng-if="currEdit!=video"></td>
+                  <td ng-if="currEdit!=video"><button ng-click="editSelect(video)">E</button></td>
+                  <td ng-if="currEdit!=video"><button ng-click="delete(video._id)">X</button></td>
+
+                  <form ng-submit="update(video._id)" ng-show="currEdit==video">
+                    <td ng-if="currEdit==video"><input type="text" ng-model="edit.title"></td>
+                    <td ng-if="currEdit==video"><input type="text" ng-model="edit.month"></td>
+                    <td ng-if="currEdit==video"><input type="text" ng-model="edit.year"></td>
+                    <td ng-if="currEdit==video"><input type="text" ng-model="edit.github"></td>
+                    <td ng-if="currEdit==video"><input type="text" ng-model="edit.url"></td>
+                    <td ng-if="currEdit==video"><input type="text" ng-model="edit.tag"></td>
+                    <td ng-if="currEdit==video"><textarea ng-model="edit.description"></textarea></td>
+                    <td ng-if="currEdit==video"><input type="submit" value="V" ng-click="update(video._id)"></td>
+                    <td ng-if="currEdit==video"><button ng-click="cancelEdit()">C</button></td>
+                  </form>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

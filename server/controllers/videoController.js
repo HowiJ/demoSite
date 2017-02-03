@@ -5,8 +5,8 @@ const Video     = mongoose.model('Video');
 
 module.exports = {
   index: (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Origin', 'http://demo.howardjiang.com/');
+    // res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    // res.header('Access-Control-Allow-Origin', 'http://demo.howardjiang.com/');
 
     Video.find({})
     .sort('-year')
@@ -24,8 +24,8 @@ module.exports = {
 
   },
   show: (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Origin', 'http://demo.howardjiang.com/');
+    // res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    // res.header('Access-Control-Allow-Origin', 'http://demo.howardjiang.com/');
 
     Video.findOne({_id: req.params.id}, (err, data) => {
       if (err) {

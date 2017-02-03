@@ -28,6 +28,7 @@ module.exports = {
   show: (req, res) => {
     if (process.env.NODE_ENV == 'production') {
       res.header('Access-Control-Allow-Origin', 'http://demo.howardjiang.com/');
+      console.log('prod');
     } else {
       res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     }

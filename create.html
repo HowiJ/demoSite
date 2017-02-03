@@ -38,11 +38,13 @@
             })
           }
           factory.create = (video, cb) => {
+            video.small = true;
             $http.post('/videos', video).then(res => {
               cb(res.data);
             })
           }
           factory.update = (id, edit, cb) => {
+            edit.small = true;
             console.log(id, edit);
             $http.put(`/videos/${id}`, edit).then(res => {
               cb(res.data);

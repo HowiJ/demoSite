@@ -13,9 +13,17 @@ module.exports = app => {
     video.show(req, res);
   })
   app.post('/videos', (req, res) => {
+    if (!req.small) {
+      res.redirect('/videos');
+      return;
+    }
     video.create(req, res);
   })
   app.put('/videos/:id', (req, res) => {
+    if (!req.small) {
+      res.redirect('/videos');
+      return;
+    }
     video.update(req, res);
   })
   app.delete('/videos/:id', (req, res) => {

@@ -12,15 +12,15 @@ const projects = [
 
 module.exports = {
   index: (req, res) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.json(projects);
   },
   show: (req, res) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.json(projects[req.params.id]);
   },
   create: (req, res) => {    
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     const project = new Project(req.body);
     projects.push(project);
     res.redirect('/projects');

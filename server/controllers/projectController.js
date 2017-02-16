@@ -13,16 +13,59 @@ const projects = [
 module.exports = {
   index: (req, res) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.json(projects);
+    Project.find({}, (err, data) => {
+      if (err) {
+        console.log(err);
+        res.json(err);
+      } else {
+        res.json(data);
+      }
+    })
   },
   show: (req, res) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.json(projects[req.params.id]);
+    Project.findOne({_id: req.params.id}, (err, data) => {
+      if (err) {
+        console.log(err);
+        res.json(err);
+      } else {
+        res.json(data);
+      }
+    })
   },
   create: (req, res) => {    
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     const project = new Project(req.body);
-    projects.push(project);
-    res.redirect('/projects');
+    project.save(err => {
+      if (err) {
+        console.log(err);
+        res.json(err);
+      } else {
+        res.redirect('/projects');
+      }
+    })
+  },
+  add: (req, res, field) => {
+    Project.findOne({_id: req.params.id}, (err, data) => {
+      if (err) {
+        console.log(err);
+        res.json(err);
+      } else {
+        if (field == 'tech') {
+          data.technologies.push(req.body.name);
+        }
+        if (field == 'img') {
+          data.imgs.push(req.body.name);
+        }
+        data.save(function(err, data) {
+          if (err) {
+            console.log(err);
+            res.json(err);
+          } else {
+            res.redirect('/projects');
+          }
+        })
+      }
+    })
   }
 }

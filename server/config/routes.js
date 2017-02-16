@@ -25,7 +25,7 @@ module.exports = app => {
     video.show(req, res);
   })
   app.post('/videos', (req, res) => {
-    if (!req.small) {
+    if (!req.body.small) {
       console.log('VIDEO')
       res.redirect('/videos');
       return;
@@ -59,6 +59,10 @@ module.exports = app => {
   })
   app.post('/projects', (req, res) => {
     project.create(req, res);
+  })
+
+  app.put('/projects/:field/:id', (req, res) => {
+    project.add(req, res, req.params.field);
   })
 
   // Fixes and Configsis

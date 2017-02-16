@@ -25,7 +25,7 @@ module.exports = app => {
     video.show(req, res);
   })
   app.post('/videos', (req, res) => {
-    if (!req.body.small) {
+    if (req.body.small != process.env.SMALL) {
       console.log('VIDEO')
       res.redirect('/videos');
       return;
@@ -33,7 +33,7 @@ module.exports = app => {
     video.create(req, res);
   })
   app.put('/videos/:id', (req, res) => {
-    if (!req.small) {
+    if (req.body.small != process.env.SMALL) {
       res.redirect('/videos');
       return;
     }

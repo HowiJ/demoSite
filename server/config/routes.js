@@ -41,6 +41,9 @@ module.exports = app => {
   })
   app.delete('/videos/:id', (req, res) => {
     // video.destroy(req, res);
+    if (process.env.SMALL == req.params.id) {
+      res.json({ok: 'ok'});
+    }
   })
 
   app.get('/assn', (req, res) => {

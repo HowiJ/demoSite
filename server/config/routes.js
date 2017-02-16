@@ -43,7 +43,9 @@ module.exports = app => {
     // video.destroy(req, res);
     if (process.env.SMALL == req.params.id) {
       res.json({ok: 'ok'});
+      return;
     }
+    res.json({no:'no'});
   })
 
   app.get('/assn', (req, res) => {

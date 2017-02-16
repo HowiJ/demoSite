@@ -40,7 +40,7 @@ module.exports = app => {
     video.update(req, res);
   })
   app.delete('/videos/:id', (req, res) => {
-    video.destroy(req, res);
+    // video.destroy(req, res);
   })
 
   app.get('/assn', (req, res) => {
